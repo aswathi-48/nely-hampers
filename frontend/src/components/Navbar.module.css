@@ -1,0 +1,54 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: var(--color-cream);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-olive);
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navLinks a {
+  font-size: 1rem;
+  color: var(--color-charcoal);
+  transition: color 0.3s;
+}
+
+.navLinks a:hover {
+  color: var(--color-gold);
+}
+
+.authLinks {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--color-olive);
+}
+
+.logoutBtn {
+  background: none;
+  border: none;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.logoutBtn:hover {
+  color: var(--color-gold);
+}
