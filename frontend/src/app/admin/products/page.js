@@ -104,7 +104,7 @@ export default function AdminProducts() {
         body: JSON.stringify(payload)
       });
       if (res.ok) {
-        setNewProduct({ name: '', price: '', description: '', productType: 'Ready-Made', category: '', images: [], stockCount: '' });
+        setNewProduct({ name: '', price: '', description: '', productType: 'Box', images: [], stockCount: '' });
         setShowAddForm(false);
         fetchData();
       } else {
