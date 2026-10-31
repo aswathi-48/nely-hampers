@@ -1,4 +1,15 @@
 import Product from '../models/Product.js';
+import { handleMongooseError } from '../utils/handleMongooseError.js';
+
+const normalizeProductInput = (input) => {
+  const product = { ...input };
+  for (const field of ['category', 'stockCount']) {
+    if (typeof product[field] === 'string' && product[field].trim() === '') {
+      delete product[field];
+    }
+  }
+  return product;
+};
 
 // @desc    Get all products (with filters)
 // @route   GET /api/products
@@ -13,7 +24,7 @@ export const getProducts = async (req, res) => {
     const products = await Product.find(query).populate('category', 'name slug');
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -29,7 +40,7 @@ export const getProductById = async (req, res) => {
       res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -38,11 +49,11 @@ export const getProductById = async (req, res) => {
 // @access  Private/Admin
 export const createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const product = new Product(normalizeProductInput(req.body));
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -54,14 +65,14 @@ export const updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
 
     if (product) {
-      Object.assign(product, req.body);
+      Object.assign(product, normalizeProductInput(req.body));
       const updatedProduct = await product.save();
       res.json(updatedProduct);
     } else {
       res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -79,8 +90,7 @@ export const deleteProduct = async (req, res) => {
       res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
-
 
