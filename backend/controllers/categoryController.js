@@ -1,4 +1,5 @@
 import Category from '../models/Category.js';
+import { handleMongooseError } from '../utils/handleMongooseError.js';
 
 // @desc    Get all categories
 // @route   GET /api/categories
@@ -8,7 +9,7 @@ export const getCategories = async (req, res) => {
     const categories = await Category.find({});
     res.json(categories);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -24,7 +25,7 @@ export const getCategoryById = async (req, res) => {
       res.status(404).json({ message: 'Category not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -34,15 +35,17 @@ export const getCategoryById = async (req, res) => {
 export const createCategory = async (req, res) => {
   try {
     const { name, slug, description, image, isActive } = req.body;
+    const normalizedName = typeof name === 'string' ? name.trim() : name;
+    const normalizedSlug = typeof slug === 'string' ? slug.trim() : slug;
     
-    const categoryExists = await Category.findOne({ slug });
+    const categoryExists = await Category.findOne({ slug: normalizedSlug });
     if (categoryExists) {
       return res.status(400).json({ message: 'Category with this slug already exists' });
     }
 
     const category = new Category({
-      name,
-      slug,
+      name: normalizedName,
+      slug: normalizedSlug,
       description,
       image,
       isActive,
@@ -51,7 +54,7 @@ export const createCategory = async (req, res) => {
     const createdCategory = await category.save();
     res.status(201).json(createdCategory);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -61,14 +64,13 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { name, slug, description, image, isActive } = req.body;
-    
     const category = await Category.findById(req.params.id);
 
     if (category) {
-      category.name = name || category.name;
-      category.slug = slug || category.slug;
-      category.description = description || category.description;
-      category.image = image || category.image;
+      if (name !== undefined) category.name = typeof name === 'string' ? name.trim() : name;
+      if (slug !== undefined) category.slug = typeof slug === 'string' ? slug.trim() : slug;
+      if (description !== undefined) category.description = description;
+      if (image !== undefined) category.image = image;
       if (isActive !== undefined) category.isActive = isActive;
 
       const updatedCategory = await category.save();
@@ -77,7 +79,7 @@ export const updateCategory = async (req, res) => {
       res.status(404).json({ message: 'Category not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
 
@@ -95,8 +97,7 @@ export const deleteCategory = async (req, res) => {
       res.status(404).json({ message: 'Category not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    handleMongooseError(res, error);
   }
 };
-
 
