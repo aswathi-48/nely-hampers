@@ -32,6 +32,7 @@ function checkFileType(file, cb) {
   if (extname && mimetype) {
     return cb(null, true);
   } else {
+    
     cb(new Error('Images only!'));
   }
 }
